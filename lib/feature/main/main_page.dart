@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:virtual_assistant/feature/books/view/book_page.dart';
+import 'package:virtual_assistant/feature/history/view/histor_page.dart';
 import 'package:virtual_assistant/generated/assets.dart';
 import 'package:virtual_assistant/utils/pallet.dart';
 import '../home/view/home_page.dart';
@@ -27,15 +28,12 @@ class _MainPageState extends ConsumerState<MainPage> {
                 ),
                 backgroundColor: Pallet.whiteColor,
                 elevation: 0,
-               
               )
             : null,
         body: _selectedIndex == 0
             ? const HomePage()
             : _selectedIndex == 1
-                ? const Center(
-                    child: Text('History Page'),
-                  )
+                ? const HistoryPage()
                 : const BooksListScreen(),
         bottomNavigationBar: BottomNavigationBar(
           selectedLabelStyle: const TextStyle(

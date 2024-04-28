@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:virtual_assistant/feature/config/config.dart';
+import 'package:virtual_assistant/feature/home/data/chat_pair.dart';
 
 class OpenAIService {
   final List<Map<String, String>> messages = [];
@@ -114,6 +116,32 @@ class OpenAIService {
       return 'An internal error occurred';
     } catch (e) {
       return e.toString();
+    }
+  }
+
+  static Future<void> saveChatPair(ChatPair chatPair) async {
+    try {
+      var hiveBox = await Hive.openBox<ChatPair>('chatPair');
+      if (!hiveBox.isOpen) {
+        hiveBox = await Hive.openBox<ChatPair>('chatPair');
+      }
+      await hiveBox.add(chatPair);
+      print('saving........');
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  static Future<List<ChatPair>> getChatPair() async {
+    try {
+      var hiveBox = await Hive.openBox<ChatPair>('chatPair');
+      if (!hiveBox.isOpen) {
+        hiveBox = await Hive.openBox<ChatPair>('chatPair');
+      }
+      return hiveBox.values.toList();
+    } catch (e) {
+      print(e);
+      return [];
     }
   }
 }

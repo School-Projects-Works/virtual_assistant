@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:virtual_assistant/feature/home/data/chat_model.dart';
+import 'package:virtual_assistant/feature/home/data/chat_pair.dart';
 import 'package:virtual_assistant/feature/home/services/opne_ai_services.dart';
 
 final userInputProvider = StateProvider<String>((ref) => '');
@@ -23,10 +24,13 @@ class ChatProvider extends StateNotifier<List<ChatModel>> {
     state = state.map((e) => e.id == chat.id ? chat : e).toList();
   }
 
-  void sendRequest(
-      {required WidgetRef ref, required BuildContext context,
-     }) async {
+  void sendRequest({
+    required WidgetRef ref,
+    required BuildContext context,
+  }) async {
     ref.read(loagingProvider.notifier).state = true;
+    final chatPair = ChatPair();
+    chatPair.dateTime= DateTime.now().millisecondsSinceEpoch;
     var input = ref.watch(userInputProvider);
     var chat = ChatModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -36,6 +40,7 @@ class ChatProvider extends StateNotifier<List<ChatModel>> {
       time: DateTime.now().millisecondsSinceEpoch,
     );
     addChat(chat);
+    chatPair.user = chat.toMap();
     final OpenAIService openAIService = OpenAIService();
     var response =
         await openAIService.isArtPromptAPI(ref.read(userInputProvider));
@@ -48,6 +53,7 @@ class ChatProvider extends StateNotifier<List<ChatModel>> {
         time: DateTime.now().millisecondsSinceEpoch,
       );
       addChat(chat);
+      chatPair.ai = chat.toMap();
     } else {
       var chat = ChatModel(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -57,11 +63,14 @@ class ChatProvider extends StateNotifier<List<ChatModel>> {
         time: DateTime.now().millisecondsSinceEpoch,
       );
       addChat(chat);
+      chatPair.ai = chat.toMap();
     }
+    //save chat pair to database
+     await OpenAIService.saveChatPair(chatPair);
     ref.read(loagingProvider.notifier).state = false;
     ref.read(userInputProvider.notifier).state = '';
   }
 }
 
 final loagingProvider = StateProvider<bool>((ref) => false);
-final systemPlaying = StateProvider<bool>((ref) => false);
+final systemPlaying = StateProvider.autoDispose<bool>((ref) => false);

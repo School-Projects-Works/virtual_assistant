@@ -30,15 +30,13 @@ class _HomePageState extends ConsumerState<HomePage> {
   String? generatedImageUrl;
   int start = 200;
   int delay = 200;
-
   @override
   void initState() {
     super.initState();
     initSpeechToText();
     initTextToSpeech();
   }
-
-  Future<void> initTextToSpeech() async {
+    Future<void> initTextToSpeech() async {
     await flutterTts.setSharedInstance(true);
     setState(() {});
   }
@@ -49,25 +47,30 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 
   Future<void> startListening() async {
-    await speechToText.listen(onResult: (onSpeechResult){
-      ref.read(userInputProvider.notifier).state = onSpeechResult.recognizedWords;
-    });
+    await speechToText.listen(onResult: onSpeechResult);
+    setState(() {});
   }
 
   Future<void> stopListening() async {
     await speechToText.stop();
+    setState(() {});
   }
 
+  void onSpeechResult(SpeechRecognitionResult result) {
+    ref.read(userInputProvider.notifier).state = result.recognizedWords;
+    // setState(() {
+    //   lastWords = result.recognizedWords;
+    // });
+  }
 
   Future<void> systemSpeak(String content) async {
-    ref.read(systemPlaying.notifier).state = true;
     await flutterTts.speak(content);
+    ref.read(systemPlaying.notifier).state = true;
   }
-
-  Future<void> stopSpeaking() async {
+   Future<void> stopSpeaking() async {
     await flutterTts.stop();
     ref.read(systemPlaying.notifier).state = false;
-  }
+   }
 
   @override
   void dispose() {
@@ -75,7 +78,6 @@ class _HomePageState extends ConsumerState<HomePage> {
     speechToText.stop();
     flutterTts.stop();
   }
-
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -400,4 +402,6 @@ class _HomePageState extends ConsumerState<HomePage> {
       ),
     );
   }
+  
+ 
 }

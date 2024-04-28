@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/widgets.dart';
 
 class ChatModel {
@@ -65,21 +64,21 @@ class ChatModel {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-  
+
     return other is ChatModel &&
-      other.id == id &&
-      other.name == name &&
-      other.message == message &&
-      other.type == type &&
-      other.time == time;
+        other.id == id &&
+        other.name == name &&
+        other.message == message &&
+        other.type == type &&
+        other.time == time;
   }
 
   @override
   int get hashCode {
     return id.hashCode ^
-      name.hashCode ^
-      message.hashCode ^
-      type.hashCode ^
-      time.hashCode;
+        name.hashCode ^
+        message.hashCode ^
+        type.hashCode ^
+        time.hashCode;
   }
 }
